@@ -10,8 +10,8 @@ flags = tf.app.flags
 FLAGS = flags.FLAGS
 
 ## Nvida's camera format
-flags.DEFINE_integer('img_h', 270, 'The image height.')
-flags.DEFINE_integer('img_w', 480, 'The image width.')
+flags.DEFINE_integer('img_h', 135, 'The image height.')
+flags.DEFINE_integer('img_w', 240, 'The image width.')
 flags.DEFINE_integer('img_c', 3, 'The number of channels.')
 
 ## Fix random seed for reproducibility

@@ -29,13 +29,20 @@ import PIL
 from pprint import pprint
 import multiprocessing
 ## Model
-import tensorflow as tf
 from keras.models import Sequential, model_from_json
 from keras.layers import Dense, Dropout, Activation, Flatten, Lambda, ELU, Cropping2D, BatchNormalization
 from keras.layers import Conv2D, SpatialDropout2D
 from keras.utils import np_utils
+from keras.utils import to_categorical
 from keras.optimizers import Adam
 from keras import regularizers
+
+import tensorflow as tf
+from keras.models import Sequential, model_from_json
+from keras.layers import Dense, Dropout, Activation, Flatten, Lambda, ELU
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.utils import np_utils
+from keras.optimizers import Adam
 ## Parameters
 import params ## you can modify the content of params
 
@@ -380,7 +387,7 @@ def save_model(model, epoch=''):
     :param epoch: The epoch number, so as to save the model to a different file name after each epoch
     :return: None
     """
-    model_path = join_dir(params.model_dir, 'model_{}.json'.format(epoch))
+    model_path = join_dir(params.model_dir, 'he_model_{}.json'.format(epoch))
     param_path = join_dir(params.model_dir, 'model_{}.h5'.format(epoch))
     #
     json_string = model.to_json()
@@ -398,58 +405,11 @@ def get_model():
     """
     Check if a model already exists
     """
-    
 
-    image_shape = (params.FLAGS.img_w, params.FLAGS.img_h, 3)
-
-    model = Sequential()
-    model.add(Lambda(lambda x: x / 225.0 - 0.5, input_shape=image_shape))
-    #model.add(Cropping2D(cropping=((70,25), (0,0))))
-
-    model.add(Conv2D(24, (5,5), strides=(2,2), activation=None, padding='same', kernel_regularizer=regularizers.l2(0.01)))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(SpatialDropout2D(0.5))
-
-    model.add(Conv2D(36, (5,5), strides=(2,2), activation=None, padding='same', kernel_regularizer=regularizers.l2(0.01)))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(SpatialDropout2D(0.5))
-
-    model.add(Conv2D(48, (5,5), strides=(2,2), activation=None, padding='same', kernel_regularizer=regularizers.l2(0.01)))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(SpatialDropout2D(0.5))
-
-    model.add(Conv2D(64, (3,3), strides=(1,1), activation=None, padding='same', kernel_regularizer=regularizers.l2(0.01)))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(SpatialDropout2D(0.5))
-
-    model.add(Conv2D(64, (3,3), strides=(1,1), activation=None, padding='same', kernel_regularizer=regularizers.l2(0.01)))
-    model.add(BatchNormalization())
-    model.add(Activation('elu'))
-    model.add(SpatialDropout2D(0.5))
-
-    model.add(Flatten())
-    model.add(Dropout(0.4))
-    model.add(Dense(100,kernel_regularizer=regularizers.l2(0.01)))
-    model.add(Activation('elu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(50,kernel_regularizer=regularizers.l2(0.01)))
-    model.add(Activation('elu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(10,kernel_regularizer=regularizers.l2(0.01)))
-    model.add(Activation('elu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(1))
-    
-    model.compile(loss='mse', optimizer='adam')
-    
-    model_path = join_dir(params.model_dir, 'model.json')
+    model_path = join_dir(params.model_dir, 'he_model.json')
     param_path = join_dir(params.model_dir, 'model.h5')
     
-    if os.path.exists(model_path):
+    if os.path.exists(param_path):
         ch = input('Model already exists, do you want to reuse? (y/n): ')
         if ch == 'y' or ch == 'Y':
             with open(model_path, 'r') as in_file:
@@ -460,6 +420,8 @@ def get_model():
             model.load_weights(weights_file)
             print('Model fetched from the disk')
             model.summary()
+    else:
+        print('Model not found. Using initial weights.')
     return model
 
 
