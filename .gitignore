@@ -1,7 +1,6 @@
 epochs/*
 images/*
 models/*
-output/*
 __pycache__/*
 .ipynb_checkpoints/
 bak/
